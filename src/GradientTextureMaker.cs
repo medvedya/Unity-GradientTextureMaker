@@ -1,4 +1,4 @@
-﻿#if UNITY_EDITOR
+#if UNITY_EDITOR
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,13 +8,15 @@ namespace GradientTextureGeneration
     [CreateAssetMenu]
     public class GradientTextureMaker : ScriptableObject
     {
-
+        public enum GradientType : int { Horizontal = 0, Vertical = 1 }
+        [SerializeField]
+        private GradientType type = GradientType.Horizontal;
         [SerializeField]
         private Gradient gradient = new Gradient();
         [SerializeField]
         private int width = 256;
         [SerializeField]
-        private int height = 2;
+        private int height = 256; 
         [SerializeField]
         Texture2D targetTexture;
         public Texture2D Make()
@@ -22,9 +24,21 @@ namespace GradientTextureGeneration
             var t2d = new Texture2D(width, height);
             for (int i = 0; i < width; i++)
             {
-                var c = gradient.Evaluate(((float)i) / width);
+
                 for (int j = 0; j < height; j++)
                 {
+                    Color c = Color.white;
+                    switch (type)
+                    {
+                        case GradientType.Horizontal:
+                            c = gradient.Evaluate(((float)i) / width);
+                            break;
+                        case GradientType.Vertical:
+                            c = gradient.Evaluate(((float)j) / height);
+                            break;
+                        default:
+                            break;
+                    }
                     t2d.SetPixel(i, j, c);
                 }
             }
@@ -62,6 +76,8 @@ namespace GradientTextureGeneration
             EditorGUILayout.PropertyField(serializedObject.FindProperty("width"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("height"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("targetTexture"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("type"));
+
             if (GUILayout.Button("Apply"))
             {
                 foreach (var item in targets)
@@ -74,4 +90,3 @@ namespace GradientTextureGeneration
     }
 }
 #endif
-
