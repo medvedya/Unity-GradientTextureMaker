@@ -8,7 +8,7 @@ namespace GradientTextureGeneration
     [CreateAssetMenu]
     public class GradientTextureMaker : ScriptableObject
     {
-        public enum GradientType : int { Horizontal = 0, Vertical = 1 }
+        public enum GradientType : int { Horizontal = 0, Vertical = 1, Radial = 3 }
         [SerializeField]
         private GradientType type = GradientType.Horizontal;
         [SerializeField]
@@ -35,6 +35,14 @@ namespace GradientTextureGeneration
                             break;
                         case GradientType.Vertical:
                             c = gradient.Evaluate(((float)j) / height);
+                            break;
+                        case GradientType.Radial:
+                            {
+                                float ox = i / (float)width - 0.5f;
+                                float oy = j / (float)height - 0.5f;
+                                float d = Mathf.Sqrt(ox * ox + oy * oy);
+                                c = gradient.Evaluate(d * 2f);
+                            }
                             break;
                         default:
                             break;
